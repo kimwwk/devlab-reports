@@ -1,0 +1,31 @@
+<div class="system-init-card">
+    <div class="system-init-header">
+        <h3>SESSION INITIALIZED</h3>
+    </div>
+    <div class="system-init-body">
+        <div class="system-info-grid">
+            <div class="system-info-item">
+                <span class="info-label">Model</span>
+                <span class="info-value">{{ data.model }}</span>
+            </div>
+            <div class="system-info-item">
+                <span class="info-label">Working Directory</span>
+                <span class="info-value code">{{ data.cwd }}</span>
+            </div>
+            <div class="system-info-item">
+                <span class="info-label">Tools Available</span>
+                <span class="info-value">{{ data.tools | length }}</span>
+            </div>
+            <div class="system-info-item">
+                <span class="info-label">MCP Servers</span>
+                <div class="mcp-badges">
+                    {% for server in data.mcp_servers %}
+                    <span class="mcp-badge mcp-{{ 'green' if server.status == 'connected' else 'red' }}">
+                        {{ server.name|upper }}: {{ server.status|upper }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

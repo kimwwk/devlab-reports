@@ -1,0 +1,63 @@
+name: Render JSONL Reports
+
+on:
+  push:
+    paths:
+      - 'data/**/*.jsonl'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Find changed JSONL files
+        id: changed
+        run: |
+          # Get list of added/modified JSONL files in this push
+          CHANGED=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'data/**/*.jsonl' 2>/dev/null || echo "")
+          if [ -z "$CHANGED" ]; then
+            echo "No JSONL files changed"
+            echo "files=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Found changed files:"
+            echo "$CHANGED"
+            echo "files<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$CHANGED" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Render reports
+        if: steps.changed.outputs.files != ''
+        run: |
+          echo "${{ steps.changed.outputs.files }}" | while IFS= read -r jsonl_file; do
+            [ -z "$jsonl_file" ] && continue
+
+            # Mirror data/ path structure into reports/
+            # data/owner/repo/file.jsonl → reports/owner/repo/file.html
+            report_dir="reports/$(dirname "${jsonl_file#data/}")"
+            mkdir -p "$report_dir"
+
+            echo "Rendering: $jsonl_file → $report_dir/"
+            python -m renderer.generate_report "$jsonl_file" "$report_dir"
+          done
+
+      - name: Commit rendered reports
+        if: steps.changed.outputs.files != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/
+          git diff --staged --quiet && echo "No new reports to commit" && exit 0
+          git commit -m "Render reports from $(echo '${{ steps.changed.outputs.files }}' | wc -l | tr -d ' ') JSONL file(s)"
+          git push

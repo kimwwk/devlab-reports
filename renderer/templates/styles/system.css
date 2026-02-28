@@ -1,0 +1,94 @@
+/* Sharp System Message Styles */
+
+.system-init-card {
+    padding: 0;
+}
+
+.system-init-header {
+    padding: 16px 20px;
+    background: #000000;
+    border: 3px solid #ffff00;
+    margin-bottom: 16px;
+}
+
+.system-init-header h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffff00;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.system-init-body {
+    padding: 0;
+}
+
+.system-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 2px solid #333333;
+}
+
+.system-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+    border-right: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+}
+
+.system-info-item:nth-child(2n) {
+    border-right: none;
+}
+
+.system-info-item:nth-last-child(-n+2) {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 11px;
+    color: #888888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.info-value {
+    font-size: 13px;
+    color: #ffffff;
+    font-weight: 400;
+}
+
+.info-value.code {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 12px;
+    color: #ffff00;
+}
+
+.mcp-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mcp-badge {
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid;
+}
+
+.mcp-green {
+    background: #000000;
+    color: #00ff00;
+    border-color: #00ff00;
+}
+
+.mcp-red {
+    background: #000000;
+    color: #ff0000;
+    border-color: #ff0000;
+}

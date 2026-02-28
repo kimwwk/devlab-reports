@@ -1,0 +1,360 @@
+/* Sharp Brutalist Base Styles - No Rounded Corners, High Contrast */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', 'Consolas', monospace;
+    background: #000000;
+    color: #ffffff;
+    line-height: 1.6;
+    min-height: 100vh;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Sharp header - white background with yellow bottom border */
+.header {
+    background: #ffffff;
+    color: #000000;
+    padding: 24px 32px;
+    border-bottom: 4px solid #ffff00;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Sharp dashboard - rectangular cards with solid borders */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-bottom: 3px solid #333333;
+}
+
+.stat-card {
+    background: #111111;
+    border-right: 3px solid #333333;
+    padding: 24px;
+    transition: background 0.1s;
+}
+
+.stat-card:last-child {
+    border-right: none;
+}
+
+.stat-card:hover {
+    background: #1a1a1a;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #888888;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.stat-value.highlight {
+    color: #ffff00;
+}
+
+/* Sharp filters - rectangular buttons with solid borders */
+.filters {
+    background: #111111;
+    border-bottom: 3px solid #333333;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0;
+}
+
+.filter-btn {
+    padding: 8px 24px;
+    border: 2px solid #333333;
+    border-right: none;
+    background: #000000;
+    color: #888888;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Courier New', 'Consolas', monospace;
+}
+
+.filter-btn:last-child {
+    border-right: 2px solid #333333;
+}
+
+.filter-btn:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.filter-btn.active {
+    background: #ffff00;
+    color: #000000;
+    border-color: #ffff00;
+}
+
+/* Sharp timeline - straight line with square indicators */
+.timeline {
+    padding: 32px;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 64px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #333333;
+}
+
+.message-card {
+    position: relative;
+    margin-bottom: 24px;
+    padding-left: 88px;
+}
+
+/* Sharp timeline indicator - square instead of circle */
+.message-indicator {
+    position: absolute;
+    left: 56px;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    border: 3px solid #000000;
+    z-index: 1;
+}
+
+.message-indicator.system {
+    background: #ffff00;
+}
+
+.message-indicator.assistant {
+    background: #00ffff;
+}
+
+.message-indicator.user {
+    background: #00ff00;
+}
+
+/* Sharp message card - rectangular with solid borders */
+.message-card-inner {
+    background: #111111;
+    border: 3px solid #333333;
+    overflow: hidden;
+    transition: border-color 0.1s;
+}
+
+.message-card-inner:hover {
+    border-color: #666666;
+}
+
+.message-card-inner.system {
+    border-left: 8px solid #ffff00;
+}
+
+.message-card-inner.assistant {
+    border-left: 8px solid #00ffff;
+}
+
+.message-card-inner.user {
+    border-left: 8px solid #00ff00;
+}
+
+/* Sharp message header - high contrast badges */
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: #000000;
+    border-bottom: 2px solid #333333;
+}
+
+.message-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 3px solid;
+}
+
+.message-type.system {
+    background: #ffff00;
+    color: #000000;
+    border-color: #000000;
+}
+
+.message-type.assistant {
+    background: #00ffff;
+    color: #000000;
+    border-color: #000000;
+}
+
+.message-type.user {
+    background: #00ff00;
+    color: #000000;
+    border-color: #000000;
+}
+
+.message-timestamp {
+    font-size: 12px;
+    color: #888888;
+    font-weight: 700;
+}
+
+/* Sharp message content - clean and flat */
+.message-content {
+    padding: 24px;
+    color: #ffffff;
+}
+
+.message-content > p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.message-content > p:last-child {
+    margin-bottom: 0;
+}
+
+/* Sharp raw data toggle */
+.collapsible-header {
+    width: 100%;
+    padding: 10px 24px;
+    background: #000000;
+    border-top: 2px solid #333333;
+    color: #666666;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Courier New', 'Consolas', monospace;
+}
+
+.collapsible-header:hover {
+    color: #888888;
+}
+
+.collapsible-content {
+    display: block;
+    margin-top: 0;
+    padding: 16px 24px;
+    background: #000000;
+    border-top: 2px solid #333333;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.collapsible-content pre {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #666666;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Sharp scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333333;
+    border: 2px solid #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #666666;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0;
+    }
+
+    .header {
+        padding: 16px 24px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .timeline {
+        padding: 16px;
+    }
+
+    .message-card {
+        padding-left: 64px;
+    }
+
+    .timeline::before {
+        left: 40px;
+    }
+
+    .message-indicator {
+        left: 32px;
+    }
+}

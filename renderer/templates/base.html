@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Run Report - {{ report_name }}</title>
+    <style>
+        {{ base_css }}
+        {{ system_css }}
+        {{ assistant_css }}
+        {{ user_css }}
+        {{ result_css }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Agent Run Report</h1>
+            <p class="subtitle">{{ report_name }}</p>
+        </header>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Duration</div>
+                <div class="stat-value">{{ stats.duration or 'N/A' }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Cost</div>
+                <div class="stat-value highlight">${{ "%.4f"|format(stats.total_cost) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Messages</div>
+                <div class="stat-value">{{ stats.total_messages }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Model</div>
+                <div class="stat-value" style="font-size: 1.2rem;">{{ stats.model }}</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-type="all">ALL</button>
+                {% for msg_type, count in stats.message_types.items() %}
+                <button class="filter-btn active" data-type="{{ msg_type }}">{{ msg_type|upper }} ({{ count }})</button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            {% for message in messages %}
+            <div class="message-card" data-type="{{ message.type }}">
+                <div class="message-indicator {{ message.type_class }}"></div>
+                <div class="message-card-inner {{ message.type_class }}">
+                    <div class="message-header">
+                        <span class="message-type {{ message.type_class }}">{{ message.type|upper }}</span>
+                        <span class="message-timestamp">{{ message.formatted_time }}</span>
+                    </div>
+                    <div class="message-content">
+                        {{ message.rendered_content | safe }}
+                    </div>
+                    <div class="collapsible-header" onclick="toggleCollapsible({{ loop.index0 }})">
+                        <span id="toggle-icon-{{ loop.index0 }}">▶</span> <span>VIEW RAW DATA</span>
+                    </div>
+                    <div id="collapsible-{{ loop.index0 }}" class="collapsible-content hidden">
+                        <pre>{{ message.raw_data }}</pre>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        const messages = {{ messages_json | tojson }};
+        {{ script_js | safe }}
+    </script>
+</body>
+</html>

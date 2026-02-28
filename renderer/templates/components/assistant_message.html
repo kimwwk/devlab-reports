@@ -1,0 +1,17 @@
+{% if content_type == 'text' %}
+<div class="assistant-thinking">
+    <div class="thinking-text">{{ text }}</div>
+</div>
+{% elif content_type == 'tool_use' %}
+<div class="tool-use-card">
+    <div class="tool-use-header">
+        <span class="tool-name">{{ tool_name }}</span>
+        <span class="tool-badge">TOOL CALL</span>
+    </div>
+    {% if tool_input %}
+    <pre class="tool-input"><code>{{ tool_input }}</code></pre>
+    {% endif %}
+</div>
+{% else %}
+<p class="assistant-text">{{ fallback_text }}</p>
+{% endif %}

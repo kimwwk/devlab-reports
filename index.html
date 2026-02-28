@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevLab Reports</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', 'Consolas', monospace;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+        .header {
+            background: #ffffff;
+            color: #000000;
+            padding: 24px 32px;
+            border-bottom: 4px solid #ffff00;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+        .section-title {
+            font-size: 11px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .repo-list {
+            list-style: none;
+        }
+        .repo-item {
+            border: 3px solid #333333;
+            margin-bottom: 8px;
+            transition: border-color 0.1s;
+        }
+        .repo-item:hover {
+            border-color: #ffff00;
+        }
+        .repo-link {
+            display: block;
+            padding: 20px 24px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .repo-link:hover {
+            color: #ffff00;
+        }
+        .repo-path {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .loading {
+            color: #888888;
+            padding: 32px 0;
+        }
+        .error {
+            color: #ff0000;
+            padding: 32px 0;
+        }
+        .empty {
+            color: #666666;
+            padding: 32px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DevLab Reports</h1>
+        <p>Agent run reports — select a repository</p>
+    </div>
+    <div class="content">
+        <div class="section-title">Repositories</div>
+        <div id="repos">
+            <p class="loading">Loading repositories...</p>
+        </div>
+    </div>
+
+    <script>
+        const REPO = 'kimwwk/devlab-reports';
+        const API = `https://api.github.com/repos/${REPO}/contents/data`;
+
+        async function loadRepos() {
+            const container = document.getElementById('repos');
+            try {
+                const resp = await fetch(API);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const owners = await resp.json();
+
+                // Each owner directory contains repo directories
+                const repos = [];
+                for (const owner of owners.filter(o => o.type === 'dir')) {
+                    const repoResp = await fetch(owner.url);
+                    if (!repoResp.ok) continue;
+                    const repoEntries = await repoResp.json();
+                    for (const repo of repoEntries.filter(r => r.type === 'dir')) {
+                        repos.push({
+                            name: `${owner.name}/${repo.name}`,
+                            path: `${owner.name}/${repo.name}`,
+                        });
+                    }
+                }
+
+                if (repos.length === 0) {
+                    container.innerHTML = '<p class="empty">No reports yet.</p>';
+                    return;
+                }
+
+                const ul = document.createElement('ul');
+                ul.className = 'repo-list';
+                repos.forEach(r => {
+                    const li = document.createElement('li');
+                    li.className = 'repo-item';
+                    li.innerHTML = `
+                        <a class="repo-link" href="runs.html?repo=${encodeURIComponent(r.path)}">
+                            ${r.name}
+                            <div class="repo-path">data/${r.path}/</div>
+                        </a>`;
+                    ul.appendChild(li);
+                });
+                container.innerHTML = '';
+                container.appendChild(ul);
+            } catch (e) {
+                container.innerHTML = `<p class="error">Failed to load: ${e.message}</p>`;
+            }
+        }
+
+        loadRepos();
+    </script>
+</body>
+</html>

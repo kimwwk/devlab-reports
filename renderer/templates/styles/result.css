@@ -1,0 +1,101 @@
+/* Sharp Result Summary Card */
+
+.result-summary-card {
+    padding: 32px;
+    margin: 32px;
+}
+
+.result-success {
+    background: #00ff00;
+    color: #000000;
+    border: 4px solid #000000;
+}
+
+.result-error {
+    background: #ff0000;
+    color: #000000;
+    border: 4px solid #000000;
+}
+
+.result-summary-header {
+    margin-bottom: 16px;
+}
+
+.result-summary-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.result-summary-body {
+    margin-top: 16px;
+}
+
+.result-summary-content {
+    line-height: 1.7;
+}
+
+.result-summary-content p {
+    margin-bottom: 16px;
+}
+
+.result-summary-content ul {
+    margin: 12px 0;
+    padding-left: 24px;
+}
+
+.result-summary-content li {
+    margin-bottom: 8px;
+}
+
+.result-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 3px solid #000000;
+    margin-top: 16px;
+}
+
+.result-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 20px;
+    border-right: 3px solid #000000;
+}
+
+.result-stat:last-child {
+    border-right: none;
+}
+
+.result-stat .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.result-stat .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .result-summary-card {
+        padding: 24px 16px;
+        margin: 16px;
+    }
+
+    .result-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .result-stat:nth-child(2n) {
+        border-right: none;
+    }
+
+    .result-stat:nth-child(-n+2) {
+        border-bottom: 3px solid #000000;
+    }
+}

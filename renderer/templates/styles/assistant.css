@@ -1,0 +1,131 @@
+/* Sharp Assistant Message Styles - Terminal Style */
+
+.assistant-thinking {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    background: #000000;
+    border: 3px solid #00ffff;
+    color: #00ffff;
+    font-style: normal;
+    position: relative;
+    padding-left: 100px;
+}
+
+.assistant-thinking::before {
+    content: 'THINKING:';
+    position: absolute;
+    left: 20px;
+    top: 16px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.thinking-text {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.assistant-text {
+    color: #ffffff;
+}
+
+/* Sharp Tool Use Card */
+.tool-use-card {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid #333333;
+}
+
+.tool-use-card:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.tool-use-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.tool-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00ffff;
+    text-transform: uppercase;
+}
+
+.tool-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 12px;
+    background: #000000;
+    color: #00ffff;
+    border: 2px solid #00ffff;
+}
+
+/* Sharp Parameters Display */
+.tool-params {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tool-param {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    font-size: 13px;
+}
+
+.param-key {
+    color: #888888;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.param-value {
+    color: #ffffff;
+    word-break: break-word;
+}
+
+.tool-input {
+    background: #000000;
+    border: 2px solid #333333;
+    padding: 16px 20px;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.tool-input code {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+/* Sharp JSON syntax highlighting */
+.json-key {
+    color: #00ffff;
+    font-weight: 700;
+}
+
+.json-string {
+    color: #00ff00;
+}
+
+.json-number {
+    color: #ffff00;
+}
+
+.json-boolean {
+    color: #ff00ff;
+}
+
+.json-null {
+    color: #888888;
+}

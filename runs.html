@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevLab Reports — Runs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', 'Consolas', monospace;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+        .header {
+            background: #ffffff;
+            color: #000000;
+            padding: 24px 32px;
+            border-bottom: 4px solid #ffff00;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .breadcrumb {
+            padding: 16px 32px;
+            background: #111111;
+            border-bottom: 3px solid #333333;
+            font-size: 12px;
+        }
+        .breadcrumb a {
+            color: #ffff00;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb span {
+            color: #888888;
+        }
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+        .section-title {
+            font-size: 11px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .run-list {
+            list-style: none;
+        }
+        .run-item {
+            border: 3px solid #333333;
+            margin-bottom: 8px;
+            transition: border-color 0.1s;
+        }
+        .run-item:hover {
+            border-color: #00ffff;
+        }
+        .run-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            color: #ffffff;
+            text-decoration: none;
+        }
+        .run-link:hover {
+            color: #00ffff;
+        }
+        .run-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .run-meta {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .run-status {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 12px;
+            border: 2px solid;
+        }
+        .status-report {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+        .status-raw {
+            color: #888888;
+            border-color: #888888;
+        }
+        .loading { color: #888888; padding: 32px 0; }
+        .error { color: #ff0000; padding: 32px 0; }
+        .empty { color: #666666; padding: 32px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>DevLab Reports</h1>
+        <p id="repo-name">Loading...</p>
+    </div>
+    <div class="breadcrumb">
+        <a href="index.html">Repos</a> <span> / </span> <span id="crumb-repo">...</span>
+    </div>
+    <div class="content">
+        <div class="section-title">Runs</div>
+        <div id="runs">
+            <p class="loading">Loading runs...</p>
+        </div>
+    </div>
+
+    <script>
+        const REPO = 'kimwwk/devlab-reports';
+        const params = new URLSearchParams(window.location.search);
+        const repoPath = params.get('repo');
+
+        document.getElementById('repo-name').textContent = repoPath || 'Unknown';
+        document.getElementById('crumb-repo').textContent = repoPath || '...';
+
+        async function loadRuns() {
+            const container = document.getElementById('runs');
+
+            if (!repoPath) {
+                container.innerHTML = '<p class="error">No repo specified. Go back to <a href="index.html" style="color:#ffff00">repo list</a>.</p>';
+                return;
+            }
+
+            try {
+                // Fetch JSONL files from data/{owner}/{repo}/
+                const dataUrl = `https://api.github.com/repos/${REPO}/contents/data/${repoPath}`;
+                const resp = await fetch(dataUrl);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const files = await resp.json();
+
+                const jsonlFiles = files
+                    .filter(f => f.name.endsWith('.jsonl'))
+                    .sort((a, b) => b.name.localeCompare(a.name)); // newest first
+
+                if (jsonlFiles.length === 0) {
+                    container.innerHTML = '<p class="empty">No runs yet.</p>';
+                    return;
+                }
+
+                const ul = document.createElement('ul');
+                ul.className = 'run-list';
+
+                for (const file of jsonlFiles) {
+                    // Parse filename: {timestamp}_{task_name}.jsonl
+                    const stem = file.name.replace('.jsonl', '');
+                    const underscoreIdx = stem.indexOf('_', stem.indexOf('_') + 1);
+                    const timestamp = underscoreIdx > 0 ? stem.substring(0, underscoreIdx) : stem;
+                    const taskName = underscoreIdx > 0 ? stem.substring(underscoreIdx + 1) : stem;
+
+                    // Format timestamp: 20260228_120000 → 2026-02-28 12:00:00
+                    let formatted = timestamp;
+                    const match = timestamp.match(/^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})$/);
+                    if (match) {
+                        formatted = `${match[1]}-${match[2]}-${match[3]} ${match[4]}:${match[5]}:${match[6]} UTC`;
+                    }
+
+                    // Check if rendered HTML exists
+                    const htmlName = file.name.replace('.jsonl', '.html');
+                    const reportPath = `reports/${repoPath}/${htmlName}`;
+
+                    const li = document.createElement('li');
+                    li.className = 'run-item';
+                    li.innerHTML = `
+                        <a class="run-link" href="${reportPath}" id="link-${stem}">
+                            <div>
+                                <div class="run-name">${taskName}</div>
+                                <div class="run-meta">${formatted}</div>
+                            </div>
+                            <span class="run-status status-report" id="status-${stem}">REPORT</span>
+                        </a>`;
+                    ul.appendChild(li);
+
+                    // Check if report exists, fall back to raw JSONL
+                    fetch(`https://api.github.com/repos/${REPO}/contents/${reportPath}`, { method: 'HEAD' })
+                        .then(r => {
+                            if (!r.ok) {
+                                const link = document.getElementById(`link-${stem}`);
+                                const status = document.getElementById(`status-${stem}`);
+                                if (link) link.href = file.html_url;
+                                if (status) {
+                                    status.textContent = 'RAW';
+                                    status.className = 'run-status status-raw';
+                                }
+                            }
+                        })
+                        .catch(() => {});
+                }
+
+                container.innerHTML = '';
+                container.appendChild(ul);
+            } catch (e) {
+                container.innerHTML = `<p class="error">Failed to load: ${e.message}</p>`;
+            }
+        }
+
+        loadRuns();
+    </script>
+</body>
+</html>

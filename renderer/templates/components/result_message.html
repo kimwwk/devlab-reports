@@ -1,0 +1,25 @@
+<div class="result-summary-card {{ 'result-error' if is_error else 'result-success' }}">
+    <div class="result-summary-header">
+        <h3>TASK {{ 'FAILED' if is_error else 'COMPLETED' }}</h3>
+    </div>
+    <div class="result-summary-body">
+        <div class="result-stats-grid">
+            <div class="result-stat">
+                <span class="stat-label">Duration</span>
+                <span class="stat-value">{{ "%.1f"|format(duration_ms / 1000) }}s</span>
+            </div>
+            <div class="result-stat">
+                <span class="stat-label">Cost</span>
+                <span class="stat-value">${{ "%.4f"|format(total_cost) }}</span>
+            </div>
+            <div class="result-stat">
+                <span class="stat-label">Input Tokens</span>
+                <span class="stat-value">{{ "{:,}".format(usage.input_tokens) }}</span>
+            </div>
+            <div class="result-stat">
+                <span class="stat-label">Output Tokens</span>
+                <span class="stat-value">{{ "{:,}".format(usage.output_tokens) }}</span>
+            </div>
+        </div>
+    </div>
+</div>

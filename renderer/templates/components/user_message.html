@@ -1,0 +1,19 @@
+{% if content_type == 'tool_result' %}
+<div class="tool-result-card">
+    <div class="tool-result-header">
+        <div class="tool-result-title">
+            <span class="tool-result-icon {{ 'error' if is_error else 'success' }}">{{ '✗' if is_error else '✓' }}</span>
+            <span>TOOL RESULT</span>
+        </div>
+        <span class="tool-result-status {{ 'error' if is_error else 'success' }}">{{ 'ERROR' if is_error else 'SUCCESS' }}</span>
+    </div>
+    <pre id="result-content-{{ msg_index }}" class="tool-result-content {{ 'tool-result-content-truncated' if is_long_content else '' }}"><code>{{ result_text }}</code></pre>
+    {% if is_long_content %}
+    <button class="result-expand-btn" onclick="toggleResultExpansion({{ msg_index }})">
+        <span id="expand-text-{{ msg_index }}">▼ EXPAND</span>
+    </button>
+    {% endif %}
+</div>
+{% else %}
+<p class="user-text">{{ fallback_text }}</p>
+{% endif %}
