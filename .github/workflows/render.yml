@@ -21,19 +21,29 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Find changed JSONL files
+      - name: Find unrendered JSONL files
         id: changed
         run: |
-          # Get list of added/modified JSONL files in this push
-          CHANGED=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'data/**/*.jsonl' 2>/dev/null || echo "")
-          if [ -z "$CHANGED" ]; then
-            echo "No JSONL files changed"
+          # Find all JSONL files that don't have a matching HTML report yet
+          UNRENDERED=""
+          for jsonl in $(find data -name '*.jsonl' 2>/dev/null); do
+            # data/owner/repo/file.jsonl → reports/owner/repo/file.html
+            html="reports/${jsonl#data/}"
+            html="${html%.jsonl}.html"
+            if [ ! -f "$html" ]; then
+              UNRENDERED="${UNRENDERED}${jsonl}\n"
+            fi
+          done
+
+          UNRENDERED=$(echo -e "$UNRENDERED" | sed '/^$/d')
+          if [ -z "$UNRENDERED" ]; then
+            echo "All reports up to date"
             echo "files=" >> "$GITHUB_OUTPUT"
           else
-            echo "Found changed files:"
-            echo "$CHANGED"
+            echo "Unrendered files:"
+            echo "$UNRENDERED"
             echo "files<<EOF" >> "$GITHUB_OUTPUT"
-            echo "$CHANGED" >> "$GITHUB_OUTPUT"
+            echo "$UNRENDERED" >> "$GITHUB_OUTPUT"
             echo "EOF" >> "$GITHUB_OUTPUT"
           fi
 
@@ -44,7 +54,6 @@ jobs:
             [ -z "$jsonl_file" ] && continue
 
             # Mirror data/ path structure into reports/
-            # data/owner/repo/file.jsonl → reports/owner/repo/file.html
             report_dir="reports/$(dirname "${jsonl_file#data/}")"
             mkdir -p "$report_dir"
 
