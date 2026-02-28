@@ -1,13 +1,22 @@
-name: Render JSONL Reports
+name: Render and Deploy
 
 on:
   workflow_dispatch:
   push:
     paths:
       - 'data/**/*.jsonl'
+      - 'index.html'
+      - 'runs.html'
+      - 'renderer/**'
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   render:
@@ -25,10 +34,8 @@ jobs:
       - name: Find unrendered JSONL files
         id: changed
         run: |
-          # Find all JSONL files that don't have a matching HTML report yet
           UNRENDERED=""
           for jsonl in $(find data -name '*.jsonl' 2>/dev/null); do
-            # data/owner/repo/file.jsonl → reports/owner/repo/file.html
             html="reports/${jsonl#data/}"
             html="${html%.jsonl}.html"
             if [ ! -f "$html" ]; then
@@ -53,11 +60,8 @@ jobs:
         run: |
           echo "${{ steps.changed.outputs.files }}" | while IFS= read -r jsonl_file; do
             [ -z "$jsonl_file" ] && continue
-
-            # Mirror data/ path structure into reports/
             report_dir="reports/$(dirname "${jsonl_file#data/}")"
             mkdir -p "$report_dir"
-
             echo "Rendering: $jsonl_file → $report_dir/"
             python -m renderer.generate_report "$jsonl_file" "$report_dir"
           done
@@ -71,3 +75,19 @@ jobs:
           git diff --staged --quiet && echo "No new reports to commit" && exit 0
           git commit -m "Render reports from $(echo '${{ steps.changed.outputs.files }}' | wc -l | tr -d ' ') JSONL file(s)"
           git push
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: render
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
