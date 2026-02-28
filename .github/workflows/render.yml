@@ -1,6 +1,7 @@
 name: Render JSONL Reports
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'data/**/*.jsonl'
